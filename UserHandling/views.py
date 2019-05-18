@@ -4,11 +4,29 @@ from rest_framework.generics import CreateAPIView,ListCreateAPIView,RetrieveAPIV
 from django.views import View
 # Create your views here.
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class CreateProfileView(ListCreateAPIView):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        serializer = ProfileSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'data': serializer.data, "status": status.HTTP_201_CREATED})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TESTVIEW(View):
+
+    def post(self,request):
+        print(request.POST.get('email',False))
+        return JsonResponse({"success":"success"})
 
 
 class GetAllUserView(RetrieveAPIView):
@@ -59,9 +77,6 @@ class GetUserFollowers(ListAPIView):
     lookup_field = 'pk'
 
     def get_queryset(self):
-        # objs = FollowerFollowing.objects.all()
-        # for obj in objs:
-        #     print(obj.followee.id)
         return FollowerFollowing.objects.filter(followee=self.kwargs['pk'])
 
 

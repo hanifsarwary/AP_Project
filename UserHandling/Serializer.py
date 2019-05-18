@@ -63,9 +63,10 @@ class ProfileSerializer(ModelSerializer):
                                   content_types=('application/json','image/jpeg'))
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     profile_pic = serializers.FileField(validators=[validate_file],allow_null=True)
-    # def create(self, validated_data):
-    #     validated_data['password'] = hashers.make_password(validated_data['password'])
-    #     return Profile.objects.create(**validated_data)
+
+    def create(self, validated_data):
+         validated_data['password'] = hashers.make_password(validated_data['password'])
+         return Profile.objects.create(**validated_data)
 
     class Meta:
         model = Profile

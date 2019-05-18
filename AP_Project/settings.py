@@ -38,10 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'UserHandling.apps.UserhandlingConfig',
-    'Messaging.apps.MessagingConfig'
+    'Messaging.apps.MessagingConfig',
+    'rest_framework',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'rest_framework.authtoken',
+    'allauth.account',
+    'rest_auth.registration',
+    'corsheaders',
 ]
 
+
 MIDDLEWARE = [
+'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,11 +62,31 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'AP_Project.urls'
+CORS_ORIGIN_ALLOW_ALL = True
+REST_SESSION_LOGIN = True
+SITE_ID = 1
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+
+}
+
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [PROJECT_PATH + '/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,8 +99,13 @@ TEMPLATES = [
     },
 ]
 
+# AUTHENTICATION_BACKENDS = (
+#     'allauth.account.auth_backends.AuthenticationBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+# )
+
 WSGI_APPLICATION = 'AP_Project.wsgi.application'
-AUTH_USER_MODEL = 'UserHandling.Profile'
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -119,10 +154,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+AUTH_USER_MODEL = 'UserHandling.Profile'
+
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [PROJECT_PATH+'/static/']
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
-
+# STATIC_ROOT = os.path.join(BASE_DIR,'static')
+#
